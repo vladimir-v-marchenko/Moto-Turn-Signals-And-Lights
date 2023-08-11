@@ -109,7 +109,7 @@ void setup() {
   MsTimer2::start();
 
   digitalWrite(LED_BUILTIN, HIGH);
-}x
+}
 
 void loop() {  // Turn EMERGENCY Signal
   if (button_left_sig.flagPress == true && button_right_sig.flagPress == true)
