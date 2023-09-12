@@ -2,19 +2,33 @@
 #include "SwitchSignal.h"
 
 #define BLINK_INTERVAL  500
-// Left Signal switch
-#define LH_SWITCH_PIN   6
-#define LH_LIGHT        7
-// Right Signal switch
-#define RH_SWITCH_PIN   8
-#define RH_LIGHT        9
-// Beam light switch
-#define BEAM_SWITCH_PIN 4
-// D5 PWM pin: on Timer0 at 976Hz for beam light
-#define BEAM_LIGHT      5
+#define BEEP_FREQUENCY  1000
 
-//#define BRAKE_SWITCH_PIN 7 // Brake sensor switch pin
-//#define BRAKE_LIGHT 11
+#define DRL_SENSOR_PIN    A1
+#define DRL_LIGHT         3
+
+// Beam light switch
+#define BEAM_SWITCH_PIN   4
+// D5 PWM pin: on Timer0 at 976Hz for beam light
+#define BEAM_LIGHT        5
+
+// Left Signal switch
+#define LH_SWITCH_PIN     6
+// D7 left signal light
+#define LH_LIGHT          7
+
+// Right Signal switch
+#define RH_SWITCH_PIN     8
+// D9 right signal light
+#define RH_LIGHT          9
+
+// Brake Signal switch
+#define BRAKE_SWITCH_PIN 10
+// D11 brake signal light 
+#define BRAKE_LIGHT      11
+
+// Buzzer connection
+#define BUZZER_PIN       12
 
 typedef enum {
     NONE,
@@ -26,7 +40,7 @@ typedef enum {
 } signal_state_t;
 
 typedef enum {
-    BEAM_LIGHT_OFF ,
+    BEAM_LIGHT_OFF,
     BEAM_LIGHT_LOW,
     BEAM_LIGHT_HIGH
 } beam_state_t;
@@ -56,7 +70,7 @@ void handleBMPress(const byte newState, const unsigned long interval, const byte
         // if beam high was on, turn beam off
         case BEAM_LIGHT_HIGH:
           beam_state = BEAM_LIGHT_OFF;
-          analogWrite(BEAM_LIGHT, 0);
+          digitalWrite(BEAM_LIGHT, LOW);
           break;
      }
      return;
@@ -123,6 +137,7 @@ void blinkLights() {
   // default to off
   digitalWrite(LH_LIGHT, LOW);
   digitalWrite(RH_LIGHT, LOW);
+  noTone(BUZZER_PIN);
   // every second time, turn them all off
   if (!onCycle)
     return;
@@ -133,31 +148,51 @@ void blinkLights() {
     case LH_DOWN:
     case LH_LIGHT_ON:
       digitalWrite(LH_LIGHT, HIGH);
+      tone(BUZZER_PIN, BEEP_FREQUENCY);
       break;
     case RH_DOWN:
     case RH_LIGHT_ON:
       digitalWrite(RH_LIGHT, HIGH);
+      tone(BUZZER_PIN, BEEP_FREQUENCY);
       break;
     case BOTH:
       digitalWrite(LH_LIGHT, HIGH);
       digitalWrite(RH_LIGHT, HIGH);
+      tone(BUZZER_PIN, BEEP_FREQUENCY);
       break;
     }  // end of switch on state
 }  // end of blinkLights
 
 // ------------------------- SETUP -------------------------
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+
   LHswitch.begin(LH_SWITCH_PIN, handleLHPress);
   pinMode(LH_LIGHT, OUTPUT);
-  
+  digitalWrite(LH_LIGHT, LOW);
+
   RHswitch.begin(RH_SWITCH_PIN, handleRHPress);
   pinMode(RH_LIGHT, OUTPUT);
+  digitalWrite(RH_LIGHT, LOW);
 
   BMswitch.begin(BEAM_SWITCH_PIN, handleBMPress);
   pinMode(BEAM_LIGHT, OUTPUT);
-  
-  //pinMode(BRAKE_SWITCH_PIN, INPUT_PULLUP);
-  //pinMode(BRAKE_LIGHT, OUTPUT);
+  digitalWrite(BEAM_LIGHT, LOW);
+
+  pinMode(BRAKE_SWITCH_PIN, INPUT_PULLUP);
+  pinMode(BRAKE_LIGHT, OUTPUT);
+  digitalWrite(BRAKE_LIGHT, LOW);
+
+  pinMode(BUZZER_PIN, OUTPUT);
+  tone(BUZZER_PIN, BEEP_FREQUENCY);
+  //digitalWrite(BUZZER_PIN, HIGH);
+  delay(500);
+  noTone(BUZZER_PIN);
+  //digitalWrite(BUZZER_PIN, LOW);
+
+  digitalWrite(LED_BUILTIN, HIGH);
+
 }  // end of setup
 
 // ------------------------- LOOP ---------------------------
@@ -165,11 +200,12 @@ void loop() {
   LHswitch.check();  // check for left signal button presses
   RHswitch.check();  // check for right signal button presses
   BMswitch.check();  // check for beam light button presses
-  /* if (digitalRead(BRAKE_SWITCH_PIN) == LOW)
+
+  if (digitalRead(BRAKE_SWITCH_PIN) == LOW)
     digitalWrite(BRAKE_LIGHT, HIGH);
   else
     digitalWrite(BRAKE_LIGHT, LOW);
-  */
+
   if (millis() - lastBlink >= BLINK_INTERVAL)
     blinkLights();
 }  // end of loop
