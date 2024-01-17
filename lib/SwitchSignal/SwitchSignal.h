@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 class SwitchSignal  {
-  enum { debounceTime = 10, noSwitch = -1 };
+  enum { debounceTime = 15, noSwitch = -1 };
   typedef void (*handlerFunction) (const byte newState,
                                    const unsigned long interval,
                                    const byte whichSwitch);
