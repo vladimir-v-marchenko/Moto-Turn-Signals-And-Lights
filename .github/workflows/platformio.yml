@@ -12,11 +12,11 @@ jobs:
           repository: adafruit/ci-arduino
           path: ci
       - name: pre-install
-        run: bash ci/actions_install.sh
+        run: python3 -m venv .venv && source .venv/bin/activate && bash ci/actions_install.sh
       - name: test platforms
-        run: python3 ci/build_platform.py main_platforms
+        run: .venv/bin/python3 ci/build_platform.py main_platforms
       - name: clang
-        run: python3 ci/run-clang-format.py -e "ci/*" -e "bin/*" -r .       
+        run: .venv/bin/python3 ci/run-clang-format.py -e "ci/*" -e "bin/*" -r .       
       - uses: actions/checkout@v4
       - run: pio run
         env:
