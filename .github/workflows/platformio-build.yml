@@ -6,12 +6,10 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - name: Setup PlatformIO
-        uses: n-vr/setup-platformio-action@v1.0.1
-        with:
-          platformio-version: 6.1.11
       - name: Checkout
-        uses: actions/checkout@v3.11.2
+        uses: actions/checkout@v2
+      - name: Setup PlatformIO
+        uses: n-vr/setup-platformio-action@v1
       - name: PlatformIO Run
         uses: karniv00l/platformio-run-action@v1
         with:
