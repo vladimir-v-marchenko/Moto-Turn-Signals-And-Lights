@@ -11,7 +11,11 @@ jobs:
         with:
           python-version: '3.11.2'
           cache: 'pip' # caching pip dependencies
-      - run: pip install platformio
+        env:
+          AGENT_TOOLSDIRECTORY: /home/debian/hostedtoolcache
+      - run: python3 -m pip install platformio
+        env:
+          AGENT_TOOLSDIRECTORY: /home/debian/hostedtoolcache       
       - name: PlatformIO Run
         uses: karniv00l/platformio-run-action@v1
         with:
