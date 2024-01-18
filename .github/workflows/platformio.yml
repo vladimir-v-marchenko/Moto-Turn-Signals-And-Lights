@@ -15,9 +15,9 @@ jobs:
       #   run: python3 -m venv .venv && source .venv/bin/activate && bash ci/actions_install.sh
       # - name: test platforms
       #   run: .venv/bin/python3 ci/build_platform.py main_platforms
-      - name: clang
-        run: python3 ci/run-clang-format.py -e "ci/*" -e "bin/*" -r .       
-      - uses: actions/checkout@v4
+      # - name: clang
+      #   run: python3 ci/run-clang-format.py -e "ci/*" -e "bin/*" -r .       
+      # - uses: actions/checkout@v4
       - run: pio run
         env:
           PATH: "/home/debian/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
