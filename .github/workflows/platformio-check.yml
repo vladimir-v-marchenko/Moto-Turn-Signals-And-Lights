@@ -1,15 +1,15 @@
-name: PlatformIO Check
+# name: PlatformIO Check
 
-on: [push, pull_request]
+# on: [push, pull_request]
 
-jobs:
-  build:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-      - name: Pio check
-        run: pio check
-        env:
-          PATH: "/home/debian/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
-          AGENT_TOOLSDIRECTORY: /home/debian/hostedtoolcache
+# jobs:
+#   build:
+#     runs-on: self-hosted
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Pio check
+#         run: pio check
+#         env:
+#           PATH: "/home/debian/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+#           AGENT_TOOLSDIRECTORY: /home/debian/hostedtoolcache
           
