@@ -20,5 +20,17 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
-      - name: Build PlatformIO Project
-        run: pio run
+      - name: Build PlatformIO Project [env:pro16MHzatmega168]
+        run: pio run -e pro16MHzatmega168
+
+      - name: Build PlatformIO Project [env:nano]
+        run: pio run -e nano
+
+      - name: Build PlatformIO Project [env:uno]
+        run: pio run -e uno
+
+
+
+
+
+
