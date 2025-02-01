@@ -1,0 +1,100 @@
+name: Tests
+version: 1
+author: Volodymyr Marchenko
+
+steps:
+  - delay: 100ms
+  - wait-serial:  "0"
+
+  # Press Left (turn on)
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - wait-serial: "1"
+
+# Press Left (tuen off)
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - wait-serial: "0"
+
+  # Press Right (turn on)
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - wait-serial: "2"
+
+# Press Right (tuen off)
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - wait-serial: "0"
+
+# Press both buttons at once
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - wait-serial: "3"
+  
+  - delay: 100ms
+  # Press both buttons at once
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - wait-serial: "0"
+  # Press for the 3rd time
+  # - set-control:
+  #     part-id: btn1
+  #     control: pressed
+  #     value: 1
+  # - wait-serial: 'Button pressed 3 times'
