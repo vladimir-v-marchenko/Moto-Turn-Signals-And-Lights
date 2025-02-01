@@ -4,8 +4,10 @@ author: Volodymyr Marchenko
 
 steps:
   - delay: 100ms
+  # return initial State::NONE:
   - wait-serial:  "0"
 
+  - delay: 1000ms
   # Press Left (turn on)
   - set-control:
       part-id: btn1
@@ -17,9 +19,15 @@ steps:
       control: pressed
       value: 0
   - delay: 200ms
+  - expect-pin:
+      part-id: led1
+      pin: A # Anode pin
+      value: 1
+  # return State::LH_LIGHT_ON
   - wait-serial: "1"
 
-# Press Left (tuen off)
+  - delay: 1000ms
+  # Press Left (tuen off)
   - set-control:
       part-id: btn1
       control: pressed
@@ -30,8 +38,14 @@ steps:
       control: pressed
       value: 0
   - delay: 200ms
+  - expect-pin:
+      part-id: led1
+      pin: A # Anode pin
+      value: 0
+  # return State::NONE
   - wait-serial: "0"
 
+  - delay: 1000ms
   # Press Right (turn on)
   - set-control:
       part-id: btn2
@@ -43,9 +57,15 @@ steps:
       control: pressed
       value: 0
   - delay: 200ms
+  - expect-pin:
+      part-id: led2
+      pin: A # Anode pin
+      value: 1
+  # return State::RH_LIGHT_ON
   - wait-serial: "2"
 
-# Press Right (tuen off)
+  - delay: 1000ms
+  # Press Right (tuen off)
   - set-control:
       part-id: btn2
       control: pressed
@@ -56,9 +76,16 @@ steps:
       control: pressed
       value: 0
   - delay: 200ms
+  - expect-pin:
+      part-id: led2
+      pin: A # Anode pin
+      value: 0
+  # return State::NONE
   - wait-serial: "0"
 
-# Press both buttons at once
+  - delay: 1000ms
+  # Press both buttons at once
+  # State::EMERGENCY
   - set-control:
       part-id: btn1
       control: pressed
@@ -77,9 +104,22 @@ steps:
       control: pressed
       value: 0
   - delay: 200ms
+  - expect-pin:
+      part-id: led1
+      pin: A # Anode pin
+      value: 1
+  - expect-pin:
+      part-id: led2
+      pin: A # Anode pin
+      value: 1
+  - expect-pin:
+      part-id: led3
+      pin: A # Anode pin
+      value: 1
+  # return State::EMERGENCY
   - wait-serial: "3"
   
-  - delay: 100ms
+  - delay: 1000ms
   # Press both buttons at once
   - set-control:
       part-id: btn1
@@ -91,6 +131,18 @@ steps:
       control: pressed
       value: 0
   - delay: 200ms
+  - expect-pin:
+      part-id: led1
+      pin: A # Anode pin
+      value: 0
+  - expect-pin:
+      part-id: led2
+      pin: A # Anode pin
+      value: 0
+  - expect-pin:
+      part-id: led3
+      pin: A # Anode pin
+      value: 0
   - wait-serial: "0"
   # Press for the 3rd time
   # - set-control:
