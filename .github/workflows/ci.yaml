@@ -13,15 +13,16 @@ on:
       - develop
     paths-ignore:
       - '**/*.md'
-on: [push]
+
 
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -42,9 +43,9 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py | python3
 
-     - name: Build firmware
-       run: |
-         pio ci --project-conf=platformio.ini src
+      - name: Build firmware
+        run: |
+          pio ci --project-conf=platformio.ini src
 
       - name: Test with Wokwi
         uses: wokwi/wokwi-ci-action@v1
