@@ -46,8 +46,11 @@ jobs:
         run: |
           pio ci --project-conf=platformio.ini src
 
+      - name: Instal wokwi CLI
+        run: curl -L https://wokwi.com/ci/install.sh | sh
+
       - name: Test with Wokwi
-        run: wokwi-cli --scenario=wokwi-scenario.yaml 
+        run: wokwi-cli --scenario=wokwi-scenario.yaml
         # uses: wokwi/wokwi-ci-action@v1
         # with:
         #   token: ${{ secrets.WOKWI_CLI_TOKEN }}
