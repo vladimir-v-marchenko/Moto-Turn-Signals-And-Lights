@@ -37,11 +37,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Install PlatformIO
         run: |
-          curl https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py | python3
+          pip install --upgrade platformio
 
       - name: Build firmware
         run: |
