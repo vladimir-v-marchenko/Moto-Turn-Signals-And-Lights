@@ -4,45 +4,51 @@ author: Volodymyr Marchenko
 
 steps:
   - delay: 100ms
-  # return initial State::NONE:
+  # return initial State::NONE = 0
   - wait-serial:  "0"
 
   - delay: 1000ms
   # Press Left (turn on)
+  # button down 
   - set-control:
       part-id: btn1
       control: pressed
       value: 1
   - delay: 100ms
+  # button up
   - set-control:
       part-id: btn1
       control: pressed
       value: 0
   - delay: 200ms
+  # Get left output pin HIGHT
   - expect-pin:
       part-id: led1
       pin: A # Anode pin
       value: 1
-  # return State::LH_LIGHT_ON
+  # return State::LH_LIGHT_ON = 1
   - wait-serial: "1"
 
   - delay: 1000ms
-  # Press Left (tuen off)
+  # Press Left (turn off)
+  # button down
   - set-control:
       part-id: btn1
       control: pressed
       value: 1
   - delay: 100ms
+  # button up
   - set-control:
       part-id: btn1
       control: pressed
       value: 0
   - delay: 200ms
+  # Get left output pin LOW
   - expect-pin:
       part-id: led1
       pin: A # Anode pin
       value: 0
-  # return State::NONE
+  # return State::NONE = 0
   - wait-serial: "0"
 
   - delay: 1000ms
@@ -61,11 +67,11 @@ steps:
       part-id: led2
       pin: A # Anode pin
       value: 1
-  # return State::RH_LIGHT_ON
+  # return State::RH_LIGHT_ON = 2
   - wait-serial: "2"
 
   - delay: 1000ms
-  # Press Right (tuen off)
+  # Press Right (turn off)
   - set-control:
       part-id: btn2
       control: pressed
@@ -80,45 +86,52 @@ steps:
       part-id: led2
       pin: A # Anode pin
       value: 0
-  # return State::NONE
+  # return State::NONE = 0
   - wait-serial: "0"
 
   - delay: 1000ms
   # Press both buttons at once
   # State::EMERGENCY
+  # left button down
   - set-control:
       part-id: btn1
       control: pressed
       value: 1
+  # right button down
   - set-control:
       part-id: btn2
       control: pressed
       value: 1
   - delay: 100ms
+  # left button up
   - set-control:
       part-id: btn1
       control: pressed
       value: 0
+  # right button up
   - set-control:
       part-id: btn2
       control: pressed
       value: 0
   - delay: 200ms
+  # Get left output pin HIGHT
   - expect-pin:
       part-id: led1
       pin: A # Anode pin
       value: 1
+  # Get right output pin HIGHT
   - expect-pin:
       part-id: led2
       pin: A # Anode pin
       value: 1
+  # Get emergency output pin HIGHT
   - expect-pin:
       part-id: led3
       pin: A # Anode pin
       value: 1
-  # return State::EMERGENCY
+  # return State::EMERGENCY = 3
   - wait-serial: "3"
-  
+
   - delay: 1000ms
   # Press both buttons at once
   - set-control:

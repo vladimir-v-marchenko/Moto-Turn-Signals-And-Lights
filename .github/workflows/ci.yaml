@@ -1,33 +1,59 @@
 name: PlatformIO CI
 
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - '**/*.md'
+  push:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - '**/*.md'
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup cache
+        uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/pip
-            ~/.platformio/.cache
+          path: ~/.platformio/.cache
           key: ${{ runner.os }}-pio
-      - uses: actions/setup-python@v5
+          restore-keys: |
+            ${{ runner.os }}-pio-
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Install PlatformIO Core
-        run: pip install --upgrade platformio
 
-      - name: Build PlatformIO Project [env:pro16MHzatmega168]
-        run: pio run -e pro16MHzatmega168
+      - name: Install PlatformIO
+        run: |
+          curl https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py | python3
 
-      - name: Build PlatformIO Project [env:nano]
-        run: pio run -e nano
+     - name: Build firmware
+       run: |
+         pio ci --project-conf=platformio.ini src
 
-      - name: Build PlatformIO Project [env:uno]
-        run: pio run -e uno
+      - name: Test with Wokwi
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: / # directory with wokwi.toml, relative to repo's root
+          timeout: 10000
+          scenario: 'wokwi-scenario.yaml'
+          serial_log_file: 'serial.log'
 
 
 
