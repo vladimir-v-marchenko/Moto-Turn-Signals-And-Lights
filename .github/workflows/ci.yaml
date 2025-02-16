@@ -47,14 +47,15 @@ jobs:
           pio ci --project-conf=platformio.ini src
 
       - name: Test with Wokwi
-        uses: wokwi/wokwi-ci-action@v1
-        with:
-          token: ${{ secrets.WOKWI_CLI_TOKEN }}
-          path: / # directory with wokwi.toml, relative to repo's root
-          timeout: 10000
-          scenario: 'wokwi-scenario.yaml'
-          serial_log_file: 'serial.log'
-          elf: .pio/build/nano/firmware.elf
+        run: wokwi-cli --scenario=wokwi-scenario.yaml 
+        # uses: wokwi/wokwi-ci-action@v1
+        # with:
+        #   token: ${{ secrets.WOKWI_CLI_TOKEN }}
+        #   path: / # directory with wokwi.toml, relative to repo's root
+        #   timeout: 10000
+        #   scenario: 'wokwi-scenario.yaml'
+        #   serial_log_file: 'serial.log'
+        #   elf: .pio/build/nano/firmware.elf
 
 
 
