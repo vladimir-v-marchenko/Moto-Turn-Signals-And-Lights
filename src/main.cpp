@@ -1,9 +1,5 @@
 #include <Arduino.h>
-#ifdef DEBUG
-#define _state Serial.println(getSignalState());
-#else
-#define _state
-#endif
+#define _DEBUG_ true
 
 #define BLINK_INTERVAL      500
 #define BEEP_FREQUENCY     1000
@@ -23,6 +19,11 @@ enum class State {
   EMERGENCY
 };
 volatile State signal_state = State::NONE;
+
+void setSignalState();
+int getSignalState();
+void L_ISR();
+void R_ISR();
 
 class SwitchSignal  {
   enum { debounceTime = 15, noSwitch = -1 };
@@ -84,7 +85,9 @@ void handleLHPress(const byte newState, const unsigned long interval, const byte
      return;
   }
   if (signal_state == State::LH_DOWN) signal_state = State::LH_LIGHT_ON;
-  _state;
+#if defined(_DEBUG_)
+  Serial.println(getSignalState());
+#endif
 }
 void handleRHPress(const byte newState, const unsigned long interval, const byte whichPin) {
   if (newState == LOW) {
@@ -103,7 +106,9 @@ void handleRHPress(const byte newState, const unsigned long interval, const byte
      return;
   }
   if (signal_state == State::RH_DOWN) signal_state = State::RH_LIGHT_ON;
-  _state;
+#if defined(_DEBUG_)
+  Serial.println(getSignalState());
+#endif
 }
 
 SwitchSignal LHswitch;
@@ -112,7 +117,7 @@ unsigned long lastBlink;
 bool onCycle;
 
 void setup() {
-  #if defined(_DEBUG_) || defined(TEST)
+  #if defined(_DEBUG_)
     Serial.begin(9600);
   #endif
   pinMode(LED_BUILTIN, OUTPUT);  digitalWrite(LED_BUILTIN, LOW);
@@ -123,10 +128,12 @@ void setup() {
   pinMode(RH_LIGHT, OUTPUT);  digitalWrite(RH_LIGHT, LOW);
   pinMode(EMERGENCY_HEAD_LIGHT, OUTPUT);  digitalWrite(EMERGENCY_HEAD_LIGHT, LOW);
   delay(500);
-  noTone(BUZZER_PIN);
   attachInterrupt(digitalPinToInterrupt(LH_SWITCH_PIN), L_ISR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(RH_SWITCH_PIN), R_ISR, CHANGE);
- _state;
+  noTone(BUZZER_PIN);
+  #if defined(_DEBUG_)
+    Serial.println("0");
+  #endif
 }
 void L_ISR() {
   LHswitch.check();
@@ -136,7 +143,8 @@ void R_ISR() {
   RHswitch.check();
   setSignalState();
 }
-byte getSignalState() {
+
+int getSignalState() {
    byte code;
    switch (signal_state) {
       case State::NONE:
@@ -182,7 +190,7 @@ void setSignalState()
         digitalWrite(LH_LIGHT, HIGH);
         digitalWrite(RH_LIGHT, HIGH);
         digitalWrite(LED_BUILTIN, HIGH);
-        digitalWrite(EMERGENCY_HEAD_LIGHT, HIGH);        
+        digitalWrite(EMERGENCY_HEAD_LIGHT, HIGH);
         tone(BUZZER_PIN, BEEP_FREQUENCY);
         break;
     }
@@ -197,6 +205,7 @@ void loop() {
       return;
     } else {
       if (signal_state != State::NONE) {
+         digitalWrite(LED_BUILTIN, HIGH);
          tone(BUZZER_PIN, BEEP_FREQUENCY);
       }
     }

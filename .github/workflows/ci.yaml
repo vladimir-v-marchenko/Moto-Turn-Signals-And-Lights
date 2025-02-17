@@ -1,33 +1,66 @@
 name: PlatformIO CI
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - '**/*.md'
+  push:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup cache
+        uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/pip
-            ~/.platformio/.cache
+          path: ~/.platformio/.cache
           key: ${{ runner.os }}-pio
-      - uses: actions/setup-python@v5
+          restore-keys: |
+            ${{ runner.os }}-pio-
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-      - name: Install PlatformIO Core
-        run: pip install --upgrade platformio
+          python-version: '3.12'
 
-      - name: Build PlatformIO Project [env:pro16MHzatmega168]
-        run: pio run -e pro16MHzatmega168
+      - name: Install PlatformIO
+        run: |
+          pip install --upgrade platformio
 
-      - name: Build PlatformIO Project [env:nano]
-        run: pio run -e nano
+      - name: Build firmware
+        run: |
+          pio ci --project-conf=platformio.ini src
 
-      - name: Build PlatformIO Project [env:uno]
-        run: pio run -e uno
+      - name: Instal wokwi CLI
+        run: curl -L https://wokwi.com/ci/install.sh | sh
+
+      - name: Test with Wokwi
+        run: wokwi-cli --scenario=wokwi-scenario.yaml
+        env:
+          WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
+        # uses: wokwi/wokwi-ci-action@v1
+        # with:
+        #   token: ${{ secrets.WOKWI_CLI_TOKEN }}
+        #   path: / # directory with wokwi.toml, relative to repo's root
+        #   timeout: 10000
+        #   scenario: 'wokwi-scenario.yaml'
+        #   serial_log_file: 'serial.log'
+        #   elf: .pio/build/nano/firmware.elf
 
 
 
