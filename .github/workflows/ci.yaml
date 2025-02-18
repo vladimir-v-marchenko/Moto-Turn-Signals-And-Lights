@@ -1,6 +1,7 @@
 name: PlatformIO CI
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - master
@@ -14,9 +15,9 @@ on:
     paths-ignore:
       - '**/*.md'
 
-defaults:
-  run:
-    working-directory: ${GITHUB_WORKSPACE}
+# defaults:
+#   run:
+#     working-directory: ${GITHUB_WORKSPACE}
 
 jobs:
   build:
@@ -51,12 +52,14 @@ jobs:
         run: curl -L https://wokwi.com/ci/install.sh | sh
 
       - name: Test with Wokwi
+        shell: bash
         run: |
-          set -e -o pipefail
+          set -eu -o pipefail
           printf "GITHUB_WORKSPACE=%s\n" "${GITHUB_WORKSPACE}"
           printf "github.workspace=%s\n" "${{ github.workspace }}"
           printf "PWD=%s\n" "${PWD}"
           ls -lah
+          pushd ${{ github.workspace }}
           declare -a files=("wokwi-scenario.yaml" "diagram.json" ".pio/build/nano/firmware.elf")
           for file in "${files[@]}"; do
             if [ ! -f "$file" ]; then
@@ -72,7 +75,6 @@ jobs:
         env:
           WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
           
-        shell: bash
         # uses: wokwi/wokwi-ci-action@v1
         # with:
         #   token: ${{ secrets.WOKWI_CLI_TOKEN }}
