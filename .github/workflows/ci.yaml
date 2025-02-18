@@ -44,9 +44,9 @@ jobs:
         run: |
           pip install --upgrade platformio
 
-      - name: Build firmware
-        run: |
-          pio ci --project-conf=platformio.ini src
+      # - name: Build firmware
+      #   run: |
+      #     pio ci --project-conf=platformio.ini src
 
       - name: Instal wokwi CLI
         run: curl -L https://wokwi.com/ci/install.sh | sh
@@ -60,6 +60,16 @@ jobs:
           printf "PWD=%s\n" "${PWD}"
           ls -lah
           pushd ${{ github.workspace }}
+          
+          pio run --environment=nano \
+                  --project-dir=${{ github.workspace }} \
+                  --project-conf=platformio.ini \
+                  --jobs=2 \
+                  --disable-auto-clean \
+                  --verbose
+          
+          find . -type f -name firmware.elf
+          
           declare -a files=("wokwi-scenario.yaml" "diagram.json" ".pio/build/nano/firmware.elf")
           for file in "${files[@]}"; do
             if [ ! -f "$file" ]; then
