@@ -52,35 +52,37 @@ jobs:
         run: curl -L https://wokwi.com/ci/install.sh | sh
 
       - name: Test with Wokwi
-        shell: bash
         run: |
           set -eu -o pipefail
-          printf "GITHUB_WORKSPACE=%s\n" "${GITHUB_WORKSPACE}"
-          printf "github.workspace=%s\n" "${{ github.workspace }}"
-          printf "PWD=%s\n" "${PWD}"
-          ls -lah
-          pushd ${{ github.workspace }}
+          pushd ${{ github.workspace }} 2>/dev/null
+
+          for environment in "uno" "nano" "minipro5v" "pro16MHzatmega328" "pro16MHzatmega168" ; do
+           echo "::group::$environment::build"
+            pio run --environment=${environment} \
+                    --project-dir=${{ github.workspace }} \
+                    --project-conf=platformio.ini \
+                    --jobs=2 \
+                    --disable-auto-clean \
+                    --verbose
+           echo "::endgroup::build"
           
-          pio run --environment=nano \
-                  --project-dir=${{ github.workspace }} \
-                  --project-conf=platformio.ini \
-                  --jobs=2 \
-                  --disable-auto-clean \
-                  --verbose
-          
-          find . -type f -name firmware.elf
-          
-          declare -a files=("wokwi-scenario.yaml" "diagram.json" ".pio/build/nano/firmware.elf")
-          for file in "${files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "File $file not found"
-              exit 1
-            fi
-          done
-          wokwi-cli --scenario=wokwi-scenario.yaml \
+           echo "::group::$environment::check"
+            declare -a files=("wokwi-scenario.yaml" "diagram.json" ".pio/build/${environment}/firmware.elf")
+            for file in "${files[@]}"; do
+              if [ ! -f "$file" ]; then
+                echo "File $file not found"
+                exit 1
+              fi
+            done
+           echo "::endgroup::build"
+            
+           echo "::group::$environment::test"
+            wokwi-cli --scenario=wokwi-scenario.yaml \
                     --diagram-file=diagram.json \
-                    --elf=.pio/build/nano/firmware.elf \
+                    --elf=.pio/build/${environment}/firmware.elf \
                     --serial-log-file=serial.log
+           echo "::endgroup::test"
+          done
           popd
         env:
           WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
