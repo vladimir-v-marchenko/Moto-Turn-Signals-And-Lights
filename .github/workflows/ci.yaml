@@ -53,7 +53,7 @@ jobs:
       
       - name: Build firmware
         run: |
-          pio ci --project-conf=platformio.ini src
+          pio ci --keep-build-dir --project-conf=platformio.ini --environment nano src
 
       # - name: Instal wokwi CLI
       #   run: curl -L https://wokwi.com/ci/install.sh | sh
