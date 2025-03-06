@@ -43,10 +43,14 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install PlatformIO
-        run: |
-          pip install --upgrade platformio
-
+      # - name: Install PlatformIO
+      #   run: |
+      #     pip install --upgrade platformio
+      
+      # Setup PlatformIO in PATH
+      - name: Setup PlatformIO
+        uses: n-vr/setup-platformio-action@v1
+      
       - name: Build firmware
         run: |
           pio ci --project-conf=platformio.ini src
