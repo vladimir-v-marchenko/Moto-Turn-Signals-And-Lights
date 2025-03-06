@@ -27,13 +27,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup cache
-        uses: actions/cache@v4
+      - name: Restore cached Primes
+        id: cache-primes-restore
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.platformio/.cache"
             ~/.cache/pip
-          key: ${{ runner.os }}
+          key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
           restore-keys: |
             ${{ runner.os }}-
 
@@ -100,6 +101,14 @@ jobs:
 
 
 
-
-
+      - name: Save Primes
+        id: cache-primes-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.platformio/.cache"
+            ~/.cache/pip
+          key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-
 
