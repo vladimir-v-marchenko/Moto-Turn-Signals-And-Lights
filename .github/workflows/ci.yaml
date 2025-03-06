@@ -47,9 +47,9 @@ jobs:
         run: |
           pip install --upgrade platformio
 
-      # - name: Build firmware
-      #   run: |
-      #     pio ci --project-conf=platformio.ini src
+      - name: Build firmware
+        run: |
+          pio ci --project-conf=platformio.ini src
 
       - name: Instal wokwi CLI
         run: curl -L https://wokwi.com/ci/install.sh | sh
@@ -89,17 +89,6 @@ jobs:
           popd
         env:
           WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
-          
-        # uses: wokwi/wokwi-ci-action@v1
-        # with:
-        #   token: ${{ secrets.WOKWI_CLI_TOKEN }}
-        #   path: / # directory with wokwi.toml, relative to repo's root
-        #   timeout: 10000
-        #   scenario: 'wokwi-scenario.yaml'
-        #   serial_log_file: 'serial.log'
-        #   elf: .pio/build/nano/firmware.elf
-
-
 
       - name: Save Primes
         id: cache-primes-save
@@ -109,6 +98,5 @@ jobs:
             ~/.platformio/.cache"
             ~/.cache/pip
           key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
-          restore-keys: |
-            ${{ runner.os }}-
+
 
