@@ -30,10 +30,12 @@ jobs:
       - name: Setup cache
         uses: actions/cache@v4
         with:
-          path: ~/.platformio/.cache
-          key: ${{ runner.os }}-pio
+          path: |
+            ~/.platformio/.cache"
+            ~/.cache/pip
+          key: ${{ runner.os }}
           restore-keys: |
-            ${{ runner.os }}-pio-
+            ${{ runner.os }}-
 
       - name: Set up Python
         uses: actions/setup-python@v5
