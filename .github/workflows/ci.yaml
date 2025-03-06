@@ -38,10 +38,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.12'
 
       # - name: Install PlatformIO
       #   run: |
@@ -55,44 +55,55 @@ jobs:
         run: |
           pio ci --project-conf=platformio.ini src
 
-      - name: Instal wokwi CLI
-        run: curl -L https://wokwi.com/ci/install.sh | sh
+      # - name: Instal wokwi CLI
+      #   run: curl -L https://wokwi.com/ci/install.sh | sh
 
-      - name: Test with Wokwi
-        run: |
-          set -eu -o pipefail
-          pushd ${{ github.workspace }} 2>/dev/null
+      # - name: Test with Wokwi
+      #   run: |
+      #     set -eu -o pipefail
+      #     pushd ${{ github.workspace }} 2>/dev/null
 
-          for environment in "uno" "nano" "minipro5v" "pro16MHzatmega328" "pro16MHzatmega168" ; do
-           echo "::group::$environment::build"
-            pio run --environment=${environment} \
-                    --project-dir=${{ github.workspace }} \
-                    --project-conf=platformio.ini \
-                    --jobs=2 \
-                    --disable-auto-clean \
-                    --verbose
-           echo "::endgroup::build"
+      #     for environment in "uno" "nano" "minipro5v" "pro16MHzatmega328" "pro16MHzatmega168" ; do
+      #      echo "::group::$environment::build"
+      #       pio run --environment=${environment} \
+      #               --project-dir=${{ github.workspace }} \
+      #               --project-conf=platformio.ini \
+      #               --jobs=2 \
+      #               --disable-auto-clean \
+      #               --verbose
+      #      echo "::endgroup::build"
           
-           echo "::group::$environment::check"
-            declare -a files=("wokwi-scenario.yaml" "diagram.json" ".pio/build/${environment}/firmware.elf")
-            for file in "${files[@]}"; do
-              if [ ! -f "$file" ]; then
-                echo "File $file not found"
-                exit 1
-              fi
-            done
-           echo "::endgroup::build"
+      #      echo "::group::$environment::check"
+      #       declare -a files=("wokwi-scenario.yaml" "diagram.json" ".pio/build/${environment}/firmware.elf")
+      #       for file in "${files[@]}"; do
+      #         if [ ! -f "$file" ]; then
+      #           echo "File $file not found"
+      #           exit 1
+      #         fi
+      #       done
+      #      echo "::endgroup::build"
             
-           echo "::group::$environment::test"
-            wokwi-cli --scenario=wokwi-scenario.yaml \
-                    --diagram-file=diagram.json \
-                    --elf=.pio/build/${environment}/firmware.elf \
-                    --serial-log-file=serial.log
-           echo "::endgroup::test"
-          done
-          popd
-        env:
-          WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
+      #      echo "::group::$environment::test"
+      #       wokwi-cli --scenario=wokwi-scenario.yaml \
+      #               --diagram-file=diagram.json \
+      #               --elf=.pio/build/${environment}/firmware.elf \
+      #               --serial-log-file=serial.log
+      #      echo "::endgroup::test"
+      #     done
+      #     popd
+      #   env:
+      #     WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
+  
+      - name: Test with Wokwi
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: ${GITHUB_WORKSPACE} 
+          timeout: 10000
+          # expect_text: 'Hello, world!'
+          # fail_text: 'Error'
+          # scenario: 'test-hello-world.yaml' # optional
+          # serial_log_file: 'log-hello-world.txt' # optional
 
       - name: Save Primes
         id: cache-primes-save
