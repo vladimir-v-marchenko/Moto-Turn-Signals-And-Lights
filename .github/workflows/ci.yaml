@@ -27,33 +27,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore cached Primes
-        id: cache-primes-restore
-        uses: actions/cache/restore@v4
+      - name: Restore caches
+        uses: actions/cache@v4
         with:
           path: |
             ~/.platformio/.cache
             ~/.cache/pip
           key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
-          restore-keys: |
-            ${{ runner.os }}-
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.12'
-
-      # - name: Install PlatformIO
-      #   run: |
-      #     pip install --upgrade platformio
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       
-      # Setup PlatformIO in PATH
-      - name: Setup PlatformIO
-        uses: n-vr/setup-platformio-action@v1
-      
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+        
+      - name: Install PlatformIO dependencies
+        run: pio pkg install
+          
       - name: Build firmware
         run: |
-          pio ci --keep-build-dir --project-conf=platformio.ini --environment nano src
+           pio run --environment nano
+           cp -v .pio/build/nano/firmware.elf firmware-nano.elf
+           cp -v .pio/build/nano/firmware.hex firmware-nano.hex
+          
+      - name: Test with Wokwi
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          timeout: 100000
+          path: /
+          scenario: "${GITHUB_WORKSPACE}/wokwi-scenario.yaml"
+          elf: "${GITHUB_WORKSPACE}/.pio/build/nano/firmware.elf"
+        env:
+          WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
+
 
       # - name: Instal wokwi CLI
       #   run: curl -L https://wokwi.com/ci/install.sh | sh
@@ -94,24 +103,17 @@ jobs:
       #   env:
       #     WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
   
-      - name: Test with Wokwi
-        uses: wokwi/wokwi-ci-action@v1
-        with:
-          token: ${{ secrets.WOKWI_CLI_TOKEN }}
-          # path: /
-          timeout: 10000
-          # expect_text: 'Hello, world!'
-          # fail_text: 'Error'
-          scenario: 'wokwi-scenario.yaml'
-          # serial_log_file: 'log-hello-world.txt' # optional
+      # - name: Test with Wokwi
+      #   uses: wokwi/wokwi-ci-action@v1
+      #   with:
+      #     token: ${{ secrets.WOKWI_CLI_TOKEN }}
+      #     path: /
+      #     timeout: 10000
+      #     # expect_text: 'Hello, world!'
+      #     # fail_text: 'Error'
+      #     scenario: 'wokwi-scenario.yaml'
+      #     # serial_log_file: 'log-hello-world.txt' # optional
 
-      - name: Save Primes
-        id: cache-primes-save
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ~/.platformio/.cache
-            ~/.cache/pip
-          key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
+      # - 
 
 
