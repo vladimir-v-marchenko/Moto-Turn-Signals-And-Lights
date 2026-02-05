@@ -65,7 +65,7 @@ jobs:
           fail_text: ""
           # scenario: "${GITHUB_WORKSPACE}/wokwi-scenario.yaml"
           scenario: wokwi-scenario.yaml
-          elf: .pio/build/nano/firmware.elf
+          # elf: .pio/build/nano/firmware.elf
           elf: "${GITHUB_WORKSPACE}/.pio/build/uno/firmware.elf"
         env:
           WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
