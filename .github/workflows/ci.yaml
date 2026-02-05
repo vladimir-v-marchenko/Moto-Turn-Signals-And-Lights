@@ -43,11 +43,11 @@ jobs:
       - name: Install PlatformIO
         run: pip install --upgrade platformio
         
-      - name: Install PlatformIO dependencies
-        run: pio pkg install
+      # - name: Install PlatformIO dependencies
+      #   run: pio pkg install
           
       - name: Run PlatformIO CI
-        run: pio ci --project-conf=platformio.ini -l include -v src
+        run: pio ci --project-conf=platformio.ini --lib=include src
         
       # - name: Build firmware
       #   run: |
@@ -56,11 +56,13 @@ jobs:
       #      cp -v .pio/build/nano/firmware.hex firmware-nano.hex
           
       - name: Test with Wokwi
-        uses: wokwi/wokwi-ci-action@v1
+        uses: wokwi/wokwi-ci-action@v1.1.0
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           timeout: 100000
-          path: /
+          # path: /
+          expect_text: ""
+          fail_text: ""
           scenario: "${GITHUB_WORKSPACE}/wokwi-scenario.yaml"
         #  elf: "${GITHUB_WORKSPACE}/.pio/build/nano/firmware.elf"
         env:
