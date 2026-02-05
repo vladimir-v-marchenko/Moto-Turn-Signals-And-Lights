@@ -46,11 +46,14 @@ jobs:
       - name: Install PlatformIO dependencies
         run: pio pkg install
           
-      - name: Build firmware
-        run: |
-           pio run --environment nano
-           cp -v .pio/build/nano/firmware.elf firmware-nano.elf
-           cp -v .pio/build/nano/firmware.hex firmware-nano.hex
+      - name: Run PlatformIO CI
+        run: pio ci --project-conf=platformio.ini -l include -v src
+        
+      # - name: Build firmware
+      #   run: |
+      #      pio run --environment nano
+      #      cp -v .pio/build/nano/firmware.elf firmware-nano.elf
+      #      cp -v .pio/build/nano/firmware.hex firmware-nano.hex
           
       - name: Test with Wokwi
         uses: wokwi/wokwi-ci-action@v1
@@ -59,7 +62,7 @@ jobs:
           timeout: 100000
           path: /
           scenario: "${GITHUB_WORKSPACE}/wokwi-scenario.yaml"
-          elf: "${GITHUB_WORKSPACE}/.pio/build/nano/firmware.elf"
+        #  elf: "${GITHUB_WORKSPACE}/.pio/build/nano/firmware.elf"
         env:
           WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
 
