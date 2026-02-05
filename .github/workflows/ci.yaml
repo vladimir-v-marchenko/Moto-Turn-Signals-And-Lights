@@ -33,7 +33,7 @@ jobs:
           path: |
             ~/.platformio/.cache
             ~/.cache/pip
-          key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}-${{ hashFiles('**/wokwi.toml') }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -47,7 +47,7 @@ jobs:
       #   run: pio pkg install
           
       - name: Run PlatformIO CI
-        run: pio ci --project-conf=platformio.ini --lib=include src
+        run: pio ci --project-conf=platformio.ini --lib=include --keep-build-dir src
         
       # - name: Build firmware
       #   run: |
@@ -60,13 +60,13 @@ jobs:
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           timeout: 100000
-          # path: /
+          #path: /
           expect_text: ""
           fail_text: ""
           # scenario: "${GITHUB_WORKSPACE}/wokwi-scenario.yaml"
           scenario: wokwi-scenario.yaml
           elf: .pio/build/nano/firmware.elf
-          #elf: "${GITHUB_WORKSPACE}/.pio/build/nano/firmware.elf"
+          elf: "${GITHUB_WORKSPACE}/.pio/build/uno/firmware.elf"
         env:
           WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
 
